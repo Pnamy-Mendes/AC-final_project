@@ -2,18 +2,18 @@
 	n_ques:          .word 4
 	
 	$questions_arr:  .word q0, q1, q2, q3
-	q0:              .asciiz "\nquestion 1\n"
-	q1:              .asciiz "\nquestion 2\n"
-	q2:		         .asciiz "\nquestion 3\n"
-	q3:		         .asciiz "\nquestion 4\n"
+	q0:              .asciiz "\nWhat is a system performance metric?\n"
+	q1:              .asciiz "\nWhat does throughput mean?\n"
+	q2:		         .asciiz "\nProcessor speed is represented in which units?\n"
+	q3:		         .asciiz "\nWhat is the CPU time dependent on?\n"
 
 	$options_arr:    .word q0op, q1op, q2op, q3op
-	q0op:            .asciiz "a) 1\tb) 2\tc) 3\td) 4\te) 5\n"
-	q1op:            .asciiz "a) 1\tb) 2\tc) 3\td) 4\te) 5\n"
-	q2op:            .asciiz "a) 1\tb) 2\tc) 3\td) 4\te) 5\n"
-	q3op:            .asciiz "a) 1\tb) 2\tc) 3\td) 4\te) 5\n"	
+	q0op:            .asciiz "a) Execution time\tb) CPU Input\tc) Heat Temp\td) Amount of CPU's\te) Output quality\n"
+	q1op:            .asciiz "a) Fetch\tb) Decoded\tc) Executed\td) Bandwidth\te) Latency\n"
+	q2op:            .asciiz "a) Meters per second\tb) Celcius\tc) Newtons\td) Hz\te) GHz\n"
+	q3op:            .asciiz "a) User Time and System Time\tb) Memory Time and CPU Time\tc) Graphics Time\td) User Input\te) System Output\n"	
 			
-	$answers_arr:    .word 'a', 'b', 'c', 'd'
+	$answers_arr:    .word 'a', 'd', 'e', 'a'
 	
 	$nums_generated: .space 16
 	

@@ -1,0 +1,10 @@
+a) Complex Inputs    b) Computer Instructions    c) Complex Computer    d) Complex Instructions    e) Complex Instruction Set Computing
+a) Reduced Inputs    b) Reduced Instruction Set Computing    c) Complex Computer    d) Reduced Instructions    e) Complex Instruction
+a) MIPS    b) MARS    c) x68    d) MAPS    e) CISC
+a) R,A,J    b) P,S,J    c) R,I,J    d) R,C,B    e) R,L,J
+a) ADD    b) .add    c) sub    d) add    e) Add
+a) slt    b) if    c) bne    d) beq    e) lw
+a) bne    b) beq    c) sw    d) li    e) if
+a) stl    b) slt    c) slti    d) bgt    e) ble
+a) lup    b) ori    c) add    d) li    e) lui
+a) lup    b) lui    c) ori    d) add    e) lw
