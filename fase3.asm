@@ -1,18 +1,18 @@
 ####################################################################
-# PROJETO DE ARQUITETURA DE COMPUTADORES 2021/2022 - UAL
+#    PROJETO DE ARQUITETURA DE COMPUTADORES 2021/2022 - UAL
 #
-# TEMA: Jogo de Aprendizagem    Fase: 3
+#    TEMA: Jogo de Aprendizagem    Fase: 3
 #
-# GRUPO:
-# Anees Asghar - 30008766
-# Diogo Pinto  - 30009004
-# João Nunes   - 30008945
-# Pedro Mendes - 30009273
+#    GRUPO:
+#    Anees Asghar - 30008766
+#    Diogo Pinto  - 30009004
+#    Joao Nunes   - 30008945
+#    Pedro Mendes - 30009273
 #
 ####################################################################
 
 .data 
-	n_lvls:                .word 3   # number of levels
+	n_lvls:                .word 5   # number of levels
 	n_ques:                .word 10  # number of questions per level
 	n_ans_to_pass:         .word 5   # number of correct answers needed to pass a level
 	
@@ -87,6 +87,7 @@
 	enter_option_str:      .asciiz "Enter the correct option: "
 	ans_success_str:       .asciiz "\nCorrect answer!\n"
 	ans_failure_str:       .asciiz "\nIncorrect answer!\n"
+	lvl_success_str:       .asciiz "\nLevel Passed! Good Job!\n"
 	lvl_failure_str:       .asciiz "\nLevel Failed!\n\n"
 	thank_you_str:         .asciiz "\nThank you for playing!\n\n"
 	lvl_result_str:        .asciiz "\nCorrectly answered: "
@@ -457,6 +458,11 @@ next_lvl:
 	lw $t0, n_ans_to_pass         # $t0 - number of correct answers needed to pass level
 	blt $s6, $t0, lvl_failed      # end level if correct answers < correct answers needed
 	
+	# otherwise, print level success msg
+	la $a0, lvl_success_str
+	li $v0, 4
+	syscall
+	
 	addi $s0, $s0, 1              # increment current level number
 	
 	lw $t0, n_lvls                # $t0 - number of levels
@@ -470,7 +476,7 @@ lvl_failed:
 	la $a0, lvl_failure_str
 	syscall
 
-	j exit                        # end program
+	j quiz_over                   # end program
 	
 
 quiz_over:

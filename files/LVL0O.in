@@ -1,10 +1,10 @@
-a) Execution time    b) CPU Input    c) Heat Temp    d) Amount of CPU's    e) Output quality
-a) Fetch    b) Decoded    c) Executed    d) Bandwidth    e) Latency
-a) Meters per second    b) Celcius    c) Newtons    d) Hz    e) GHz
-a) User Time and System Time    b) Memory Time and CPU Time    c) Graphics Time    d) User Input    e) System Output
-a) 1822    b) 1922    c) 1842    d) 1942    e) 1950
-a) Input    b) Output    c) Memory    d) Cooling    e) Control
-a) Python    b) Java    c) C    d) Html    e) MIPS Assembly
-a) Optimizing the common    b) Better cooling    c) More memory    d) More microprocessors    e) Optimizing the cpu
-a) Fetch,Decode,Execute    b) Decode,Execute,Fetch    c) Execute,Fetch,Decode    d) Input,Compile,Output    e) Assemble,Compile,Output
-a) ROM and Hard Disc    b) Internet and Cloud    c) Physical and Virtual    d) Removal Discs    e) USB, Hard Drive
+a) John Von Neumann    b) Mark Zuckerberg    c) Bill Gates     d) Steve Jobs    e) Tim Berners-Lee 
+a) Stored Program Concept    b) Memory Program System    c) Stored Memory Concept    d) Stored Memory Program     e) None of The Above
+a) CPU    b) Cache    c) NIC    d) Control Unit     e) Buses
+a) Processor, RAM & ROM     b) Processor, RAM & HD    c) Processor, Memory Unit & I/O    d) Memory, HD & I/O    e) Input / Output
+a) RAM & Cache    b)  Control Unit & Arithmetic Logic Unit   c) RAM & ROM    d) GPU    e) Control Unit & Cache
+a) CPU    b) Data Bus    c) I/O Bus    d) Address Bus    e) Control
+a) CPU    b) Control Bus    c) Address Bus    d) Data Bus    e) Cache Bus
+a) I/O Bus    b) Control Bus    c) Address Bus    d) Data Bus    e) CPU
+a) Memory    b) Coordinates    c) Register    d) Cache    e) Address
+a) Addresses    b) Registers    c) Cache    d) Buses     e) Coordinates
