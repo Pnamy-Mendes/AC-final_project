@@ -12,7 +12,7 @@
 ####################################################################
 
 .data 
-	n_lvls:                .word 5   # number of levels
+	n_lvls:                .word 6   # number of levels
 	n_ques:                .word 10  # number of questions per level
 	n_ans_to_pass:         .word 5   # number of correct answers needed to pass a level
 	
