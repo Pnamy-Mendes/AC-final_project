@@ -1,3 +1,16 @@
+####################################################################
+# PROJETO DE ARQUITETURA DE COMPUTADORES 2021/2022 - UAL
+#
+# TEMA: Jogo de Aprendizagem    Fase: 2
+#
+# GRUPO:
+# Anees Asghar - 30008766
+# Diogo Pinto  - 30009004
+# João Nunes   - 30008945
+# Pedro Mendes - 30009273
+#
+####################################################################
+
 .data 
 	n_lvls:                .word 3
 	n_ques:                .word 10
