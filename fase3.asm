@@ -1,9 +1,10 @@
 .data 
-	n_lvls:                .word 3
-	n_ques:                .word 10
-	n_ques_to_pass:        .word 2
+	n_lvls:                .word 3   # number of levels
+	n_ques:                .word 10  # number of questions per level
+	n_ans_to_pass:         .word 5   # number of correct answers needed to pass a level
 	
-	q_files:               .word qfile0, qfile1, qfile2, qfile3, qfile4, qfile5
+	# files where questions for each level are stored
+	$q_files:              .word qfile0, qfile1, qfile2, qfile3, qfile4, qfile5
 	qfile0:                .asciiz "files\\LVL0Q.in"
 	qfile1:                .asciiz "files\\LVL1Q.in"
 	qfile2:                .asciiz "files\\LVL2Q.in"
@@ -11,7 +12,8 @@
 	qfile4:                .asciiz "files\\LVL4Q.in"
 	qfile5:                .asciiz "files\\LVL5Q.in"
 
-	op_files:              .word opfile0, opfile1, opfile2, opfile3, opfile4, opfile5
+	# files where options to each level's questions are stored
+	$op_files:             .word opfile0, opfile1, opfile2, opfile3, opfile4, opfile5
 	opfile0:               .asciiz "files\\LVL0O.in"
 	opfile1:               .asciiz "files\\LVL1O.in"
 	opfile2:               .asciiz "files\\LVL2O.in"
@@ -19,7 +21,8 @@
 	opfile4:               .asciiz "files\\LVL4O.in"
 	opfile5:               .asciiz "files\\LVL5O.in"
 
-	ans_files:             .word ansfile0, ansfile1, ansfile2, ansfile3, ansfile4, ansfile5
+	# files where answers to each level's questions are stored
+	$ans_files:            .word ansfile0, ansfile1, ansfile2, ansfile3, ansfile4, ansfile5
 	ansfile0:              .asciiz "files\\LVL0A.in"
 	ansfile1:              .asciiz "files\\LVL1A.in"
 	ansfile2:              .asciiz "files\\LVL2A.in"
@@ -27,6 +30,7 @@
 	ansfile4:              .asciiz "files\\LVL4A.in"
 	ansfile5:              .asciiz "files\\LVL5A.in"
 
+	# buffers to store the questions for current level
 	$qs_arr:               .word q0, q1, q2, q3, q4, q5, q6, q7, q8, q9
 	q0:                    .space 256
 	q1:                    .space 256
@@ -39,6 +43,7 @@
 	q8:		               .space 256
 	q9:		               .space 256
 
+	# buffers to store the option strings for current level's questions
 	$opstr_arr:            .word opstr0, opstr1, opstr2, opstr3, opstr4, opstr5, opstr6, opstr7, opstr8, opstr9
 	opstr0:                .space 256 
 	opstr1:                .space 256 
@@ -51,14 +56,20 @@
 	opstr8:                .space 256 
 	opstr9:                .space 256 
 
+	# buffer to store the answers (chars) for the current level's questions
 	$ans_arr:              .space 10
 	.align 2
 
-	$nums_generated_data:  .word $lvl_1_nums_generated, $lvl_2_nums_generated, $lvl_3_nums_generated
-	$lvl_1_nums_generated: .space 40
-	$lvl_2_nums_generated: .space 40
-	$lvl_3_nums_generated: .space 40
+	# buffers to store the random numbers generated for each level (to select questions randomly)
+	$rand_nums_generated:  .word l0_rand_nums, l1_rand_nums, l2_rand_nums, l3_rand_nums, l4_rand_nums, l5_rand_nums
+	l0_rand_nums:          .space 40
+	l1_rand_nums:          .space 40
+	l2_rand_nums:          .space 40
+	l3_rand_nums:          .space 40
+	l4_rand_nums:          .space 40
+	l5_rand_nums:          .space 40
 	
+	# strings to be displayed
 	ques_num_str:          .asciiz "Question "
 	enter_option_str:      .asciiz "Enter the correct option: "
 	ans_success_str:       .asciiz "\nCorrect answer!\n"
@@ -70,6 +81,7 @@
 	lvl_welcome_start:     .asciiz "\n-------------------- LEVEL "
 	lvl_welcome_end:       .asciiz " --------------------\n"
 	
+	# buffer to read a character from file
 	char_buffer:           .space 1
 
 	
@@ -79,192 +91,199 @@
 main:
 	li $s0, 0          # $s0 - current level (zero-based)
 	j loop_over_lvls
-	
-	
-load_questions:
-	move $s7 $ra # save return address
-
-    # open file
-    li $v0 13         # syscall for open file
-    la $t0 q_files    # question filenames array
-    sll $t1 $s0 2     # offset based on curr lvl
-    add $t1 $t0 $t1   # $t1 - the address to the address of the filename for curr lvl's questions
-    lw $a0 ($t1)      # $a0 - address to the file name for curr lvl's questions
-    li $a1 0          # read flag
-    li $a2 0          # ignore mode 
-    syscall           # open file
-    move $t0 $v0      # $t0 - file desciptor 
-	
-    la $t6 $qs_arr    # $t6 - address to ques array
-    lw $t1 0($t6)     # $t1 - address to buffer of curr question
-    li $t2 0          # current ques number
-    li $t3 0          # current ques length
-
-    j read_byte
 
 
-load_options:
-	move $s7 $ra # save return address
-
-    # open file
-    li $v0 13          # syscall for open file
-    la $t0 op_files    # question filenames array
-    sll $t1 $s0 2      # offset based on curr lvl
-    add $t1 $t0 $t1    # $t1 - the address to the address of the filename for curr lvl's options
-    lw $a0 ($t1)       # $a0 - address to the filename for curr lvl's option string
-    li $a1 0           # read flag
-    li $a2 0           # ignore mode 
-    syscall            # open file
-    move $t0 $v0       # $t0 - file desciptor 
-	
-    la $t6 $opstr_arr  # address to option string array
-    lw $t1 0($t6)   # $t1 - address to buffer of the curr ques option string
-    li $t2 0        # current option string number
-    li $t3 0        # current option string length
-
-    j read_byte
-
-read_byte:
-    # read byte from file
-    li $v0 14          # syscall for read file
-    move $a0 $t0       # file descriptor 
-    la $a1 char_buffer # address of dest buffer
-    li $a2 1           # buffer length
-    syscall            # read byte from file
-
-    # keep reading until bytes read <= 0
-    blez $v0 load_done
-
-    # if current byte is a carraige return, consume line
-    lb $t4 char_buffer        # the byte read
-    li $t5 13                 # 13 - carriage return
-    beq $t4 $t5 consume_line
-    
-    # if current byte is a newline char, go to next byte
-    lb $t4 char_buffer        # the byte read
-    li $t5 10                 # 13 - newine char
-    beq $t4 $t5 read_byte
-
-    # otherwise, append byte to line
-    add $t5 $t3 $t1  # address of the space next to the last char in curr ques buffer
-    sb $t4 ($t5)     # put the byte read at that space
-
-    addi $t3 $t3 1   # increment ques length
-
-    b read_byte
- 
- 
-consume_line:
-    # null terminate line
-    add $t4 $t3 $t1 # address of the space next to the last char in curr ques buffer
-    sb $zero ($t4)  # put null character at that space
-
-	addi $t2 $t2 1  # increment ques number
-    li $t3 0        # reset ques length
-
-    # jump to load_done if all questions read
-    lw $t4 n_ques
-    beq $t2 $t4 load_done
-
-    # set $t1 to the address to the next question's buffer
-    sll $t4 $t2 2   # compute offset based on question number
-    add $t1 $t6 $t4 # address to the address of the curr ques buffer
-    lw $t1 ($t1)    # $t1 - address to curr ques buffer
-
-    b read_byte
-
-
-load_done:
-    # close file
-    li $v0 16     # syscall for close file
-    move $a0 $t0  # file descriptor to close
-    syscall       # close file
-    
-    move $ra $s7
-    jr $ra
-    
-
-load_answers:
-	move $s7 $ra # save return address
-
-    # open file
-    li $v0 13          # syscall for open file
-    la $t0 ans_files   # question filenames array
-    sll $t1 $s0 2      # offset based on curr lvl
-    add $t1 $t0 $t1    # $t1 - the address to the address of the filename for curr lvl's answers
-    lw $a0 ($t1)       # $a0 - address to the filename for curr lvl's answers
-    li $a1 0           # read flag
-    li $a2 0           # ignore mode 
-    syscall            # open file
-    move $t0 $v0       # $t0 - file desciptor 
-	
-    la $t1 $ans_arr    # address to answers array
-    li $t2 0           # current question number
-
-    j read_byte_2
-    
-
-read_byte_2:
-	# break if answers to all questions have been read
-	lw $t3 n_ques
-	beq $t2 $t3 load_done
-	
-    # read byte from file
-    li $v0 14          # syscall for read file
-    move $a0 $t0       # file descriptor 
-    la $a1 char_buffer # address of dest buffer
-    li $a2 1           # buffer length
-    syscall            # read byte from file
-   
-    # keep reading until bytes read <= 0
-    blez $v0 load_done
-
-    # read next byte if byte read was carriage character or newline
-    lb $t4 char_buffer              # the byte read
-    li $t5 13                       # 13 - carriage return
-    beq $t4 $t5 read_byte_2         # read next byte if carriage character was read
-    li $t5 10                       # 10 - newline char
-    beq $t4 $t5 read_byte_2         # read next byte if newline character was read
-
-    # otherwise, put answer in $ans_arr
-    add $t3 $t2 $t1  # address of the memory space to put curr question's answer
-    sb $t4 ($t3)     # put the byte read at that space
-
-    addi $t2 $t2 1   # increment current answer number
-
-    b read_byte_2
-  
 loop_over_lvls:
 	# print level welcome msg
-	la $a0 lvl_welcome_start
+	la $a0 lvl_welcome_start      # print beginning of lvl welcome msg
 	li $v0 4
 	syscall
-	move $a0 $s0
+	move $a0 $s0                  # print level number
 	li $v0 1
 	syscall
-	la $a0 lvl_welcome_end
+	la $a0 lvl_welcome_end        # print end of lvl welcome msg
 	li $v0 4
 	syscall
 	
 	jal load_questions            # load questions for level
 	jal load_options              # load options for level
 	jal load_answers              # load answers for level
-	
-	mul $t1, $s0, 4               # calculate offset to access data for this lvl
+
+	# Note: During the above 3 instructions, when we read data from a file, we differentiate
+	# one question's data from the other based on the carriage return character '\r'
 
 	la $s1, $qs_arr               # address of the array of questions
 	la $s2, $opstr_arr            # address of the array of option strings
 	la $s3, $ans_arr              # address of the array of answers
-
-	la $t5, $nums_generated_data  # $t5 - address of the nums_generated_data array
-	add $t5, $t5, $t1             # $t5 - adress of the $s0'th item of nums_generated_data
-	lw $s4, 0($t5)                # $s4 - address of nums_generated array for this lvl
+	
+	sll $t1, $s0, 2               # offset based on level number
+	la $t5, $rand_nums_generated  # $t5 - address of the rand_nums_generated array
+	add $t5, $t5, $t1             # $t5 - adress of the address to the rand nums buffer for current lvl
+	lw $s4, 0($t5)                # $s4 - address of rand nums buffer for current lvl
 
 	li $s5, 0                     # $s5 - current question number (zero based)
 	li $s6, 0                     # $s6 - correct answer counter
 
 	j ask_next_q
 
+	
+load_questions:
+	move $s7 $ra                  # save return address
+
+    # open file
+    li $v0 13                     # syscall for open file
+    la $t0 $q_files               # question files array
+    sll $t1 $s0 2                 # offset based on curr lvl
+    add $t1 $t0 $t1               # $t1 - the address to the address of the filename for curr lvl's questions
+    lw $a0 ($t1)                  # $a0 - address to the file name for curr lvl's questions
+    li $a1 0                      # read flag
+    li $a2 0                      # ignore mode 
+    syscall                       # open file
+
+    move $t0 $v0                  # $t0 - file desciptor 
+	
+    la $t6 $qs_arr                # $t6 - address to ques array
+    lw $t1 0($t6)                 # $t1 - address to buffer of first question
+    li $t2 0                      # current ques number
+    li $t3 0                      # current ques length
+
+    j read_byte                   # jump to read_byte
+
+
+read_byte:
+    # read byte from file
+    li $v0 14                     # syscall for read file
+    move $a0 $t0                  # file descriptor 
+    la $a1 char_buffer            # address of dest buffer
+    li $a2 1                      # buffer length
+    syscall                       # read byte from file
+
+    # keep reading until bytes read <= 0
+    blez $v0 load_done
+
+    # if current byte is a carraige return, consume line
+    lb $t4 char_buffer            # the byte read
+    li $t5 13                     # 13 - carriage return
+    beq $t4 $t5 consume_line
+    
+    # if current byte is a newline char, go to next byte
+    lb $t4 char_buffer            # the byte read
+    li $t5 10                     # 13 - newine char
+    beq $t4 $t5 read_byte
+
+    # otherwise, append byte to line
+    add $t5 $t3 $t1               # address of the memory space right after the end of the line being read
+    sb $t4 ($t5)                  # put the byte read at that space
+
+    addi $t3 $t3 1                # increment line length
+
+    b read_byte                   # continue loop
+ 
+ 
+consume_line:
+    # null terminate line
+    add $t4 $t3 $t1               # address of the memory space right after the end of the line being read
+    sb $zero ($t4)                # put null character at that space
+
+	addi $t2 $t2 1                # increment line number
+    li $t3 0                      # reset line length
+
+    # jump to load_done if all lines read
+    lw $t4 n_ques                 # number of questions per level
+    beq $t2 $t4 load_done         # jump to load done if content for each question has been loaded
+
+    # set $t1 to the address to the next line's buffer
+    sll $t4 $t2 2                 # compute offset based on line number
+    add $t1 $t6 $t4               # address to the address of the curr line buffer
+    lw $t1 ($t1)                  # $t1 - address to curr line buffer
+
+    b read_byte                   # read next byte
+
+
+load_done:
+    # close file
+    li $v0 16                     # syscall for close file
+    move $a0 $t0                  # file descriptor to close
+    syscall                       # close file
+    
+    move $ra $s7                  # move saved return address back to $ra
+    jr $ra                        # jump return
+
+
+load_options:
+	move $s7 $ra                  # save return address
+
+    # open file
+    li $v0 13                     # syscall for open file
+    la $t0 $op_files              # option files array
+    sll $t1 $s0 2                 # offset based on curr lvl
+    add $t1 $t0 $t1               # $t1 - the address to the address of the filename for curr lvl's option string
+    lw $a0 ($t1)                  # $a0 - address to the filename for curr lvl's option string
+    li $a1 0                      # read flag
+    li $a2 0                      # ignore mode 
+    syscall                       # open file
+
+    move $t0 $v0                  # $t0 - file desciptor 
+	
+    la $t6 $opstr_arr             # address to option string array
+    lw $t1 0($t6)                 # $t1 - address to first option string buffer
+    li $t2 0                      # current option string number
+    li $t3 0                      # current option string length
+
+    j read_byte                   # jump to read_byte
+  
+
+load_answers:
+	move $s7 $ra                  # save return address
+
+    # open file
+    li $v0 13                     # syscall for open file
+    la $t0 $ans_files             # answer files array
+    sll $t1 $s0 2                 # offset based on curr lvl
+    add $t1 $t0 $t1               # $t1 - the address to the address of the filename for curr lvl's answers
+    lw $a0 ($t1)                  # $a0 - address to the filename for curr lvl's answers
+    li $a1 0                      # read flag
+    li $a2 0                      # ignore mode 
+    syscall                       # open file
+
+    move $t0 $v0                  # $t0 - file desciptor 
+	
+    la $t1 $ans_arr               # address to answers array
+    li $t2 0                      # current answer number
+
+    j read_byte_2                 # jump to read_byte_2
+    
+
+read_byte_2:
+	# break if answers to all questions have been read
+	lw $t3 n_ques                 # number of questions per level
+	beq $t2 $t3 load_done         # branch to load_done if all answers read
+	
+    # read byte from file
+    li $v0 14                     # syscall for read file
+    move $a0 $t0                  # file descriptor 
+    la $a1 char_buffer            # address of dest buffer
+    li $a2 1                      # buffer length
+    syscall                       # read byte from file
+   
+    # keep reading until bytes read <= 0
+    blez $v0 load_done            # branch to load_done if no bytes read
+
+    # read next byte if byte read was carriage return or newline character
+    lb $t4 char_buffer            # the byte read
+    li $t5 13                     # 13 - carriage return
+    beq $t4 $t5 read_byte_2       # read next byte if carriage return character was read
+    li $t5 10                     # 10 - newline char
+    beq $t4 $t5 read_byte_2       # read next byte if newline character was read
+
+    # otherwise, put the byte read in $ans_arr
+    add $t3 $t2 $t1               # address of the memory space to put curr question's answer
+    sb $t4 ($t3)                  # put the byte read at that space
+
+    addi $t2 $t2 1                # increment current answer number
+
+    b read_byte_2                 # read next byte
+  
 
 ask_next_q:
 	lw $t0, n_ques                # $t0 - number of questions per level
@@ -274,7 +293,7 @@ ask_next_q:
 	jal get_rand_num              # $v0 - random number generated (without repitition)
 	addi $sp, $sp, 8              # restore space in stack
 
-	mul $t0, $v0, 4               # $t0 - offset
+	sll $t0, $v0, 2               # $t0 - offset based on random number generated
 	add $t1, $s1, $t0             # $t1 - address of the question string
 	add $t2, $s2, $t0             # $t2 - address of the options string
 	add $t3, $s3, $v0             # $t3 - address to the the correct answer
@@ -422,7 +441,7 @@ next_lvl:
 	li $v0 11
 	syscall
 
-	lw $t0, n_ques_to_pass        # $t0 - number of correct answers needed to pass level
+	lw $t0, n_ans_to_pass         # $t0 - number of correct answers needed to pass level
 	blt $s6, $t0, lvl_failed      # end level if correct answers < correct answers needed
 	
 	addi $s0, $s0, 1              # increment current level number
